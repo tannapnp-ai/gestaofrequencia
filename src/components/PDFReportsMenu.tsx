@@ -42,6 +42,13 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
   const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Inicializar com todas as equipes selecionadas por padrão
+  React.useEffect(() => {
+    if (teams.length > 0 && selectedTeams.length === 0) {
+      setSelectedTeams(teams.map(t => t.id));
+    }
+  }, [teams]);
+
   const getTeamName = (teamId: string) => {
     const team = teams.find(t => t.id === teamId);
     return team ? team.name : `Equipe ${teamId}`;
@@ -65,9 +72,11 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
 
   const generateMonthlyPDF = async () => {
     if (selectedTeams.length === 0) {
-      alert('Selecione pelo menos uma equipe.');
-      return;
+      // Se nenhuma equipe selecionada, usar todas
+      setSelectedTeams(teams.map(t => t.id));
     }
+
+    const teamsToProcess = selectedTeams.length > 0 ? selectedTeams : teams.map(t => t.id);
 
     setIsGenerating(true);
     
@@ -84,8 +93,8 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 10;
 
-      for (let teamIndex = 0; teamIndex < selectedTeams.length; teamIndex++) {
-        const teamId = selectedTeams[teamIndex];
+      for (let teamIndex = 0; teamIndex < teamsToProcess.length; teamIndex++) {
+        const teamId = teamsToProcess[teamIndex];
         const teamEmployees = employees.filter(emp => emp.team === teamId);
         
         if (teamEmployees.length === 0) continue;
@@ -273,7 +282,7 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
       }
 
       // Salvar PDF
-      const fileName = `planilha-mensal-${selectedMonth}-${selectedTeams.join('-')}.pdf`;
+      const fileName = `planilha-mensal-${selectedMonth}-${teamsToProcess.join('-')}.pdf`;
       doc.save(fileName);
       
     } catch (error) {
@@ -286,14 +295,16 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
 
   const generateVacationPDF = async () => {
     if (selectedTeams.length === 0) {
-      alert('Selecione pelo menos uma equipe.');
-      return;
+      // Se nenhuma equipe selecionada, usar todas
+      setSelectedTeams(teams.map(t => t.id));
     }
 
     if (vacationTypes.length === 0) {
       alert('Selecione pelo menos um tipo de férias.');
       return;
     }
+
+    const teamsToProcess = selectedTeams.length > 0 ? selectedTeams : teams.map(t => t.id);
 
     setIsGenerating(true);
     
@@ -311,7 +322,7 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
 
       let currentY = 35;
 
-      for (const teamId of selectedTeams) {
+      for (const teamId of teamsToProcess) {
         const teamEmployees = employees.filter(emp => emp.team === teamId);
         
         if (teamEmployees.length === 0) continue;
@@ -412,7 +423,7 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
       }
 
       // Verificar se há dados
-      const hasData = selectedTeams.some(teamId => {
+      const hasData = teamsToProcess.some(teamId => {
         const teamEmployees = employees.filter(emp => emp.team === teamId);
         return teamEmployees.some(employee => {
           const periods = getVacationPeriods(employee.id);
@@ -442,7 +453,7 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
       }
 
       // Salvar PDF
-      const fileName = `relatorio-ferias-${vacationTypes.join('-')}-${selectedTeams.join('-')}.pdf`;
+      const fileName = `relatorio-ferias-${vacationTypes.join('-')}-${teamsToProcess.join('-')}.pdf`;
       doc.save(fileName);
       
     } catch (error) {
@@ -454,6 +465,11 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
   };
 
   const handleGenerate = () => {
+    // Se nenhuma equipe selecionada, selecionar todas automaticamente
+    if (selectedTeams.length === 0) {
+      setSelectedTeams(teams.map(t => t.id));
+    }
+    
     if (reportType === 'monthly') {
       generateMonthlyPDF();
     } else {
@@ -604,7 +620,7 @@ export const PDFReportsMenu: React.FC<PDFReportsMenuProps> = ({
             {/* Botão Gerar */}
             <button
               onClick={handleGenerate}
-              disabled={isGenerating || selectedTeams.length === 0}
+              disabled={isGenerating}
               className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               {isGenerating ? (
