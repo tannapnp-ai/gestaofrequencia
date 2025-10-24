@@ -4,7 +4,7 @@ import { Employee, AbsenceRecord } from '../types';
 import { getDaysInMonth, formatDate, getDayName, isWeekend } from '../utils/dateUtils';
 import { getAbsenceTypeInfo } from '../data/absenceTypes';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
