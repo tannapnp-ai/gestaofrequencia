@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FileText, Download, Filter, Calendar } from 'lucide-react';
 import { Employee, AbsenceRecord } from '../types';
 import { absenceTypes } from '../data/absenceTypes';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 // Extend jsPDF type to include autoTable

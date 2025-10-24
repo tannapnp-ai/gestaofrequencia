@@ -3,8 +3,8 @@ import { FileText, Download, Calendar } from 'lucide-react';
 import { Employee, AbsenceRecord } from '../types';
 import { getDaysInMonth, formatDate, getDayName, isWeekend } from '../utils/dateUtils';
 import { getAbsenceTypeInfo } from '../data/absenceTypes';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 interface MonthlyPDFGeneratorProps {
   employees: Employee[];
