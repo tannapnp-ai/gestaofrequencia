@@ -3,7 +3,7 @@ import { FileText, Download, Calendar, Users, X, Check } from 'lucide-react';
 import { Employee, AbsenceRecord } from '../types';
 import { getDaysInMonth, formatDate, getDayName, isWeekend } from '../utils/dateUtils';
 import { getAbsenceTypeInfo } from '../data/absenceTypes';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 // Extend jsPDF type to include autoTable
